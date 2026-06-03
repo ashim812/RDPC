@@ -5,6 +5,7 @@
   "display": "fullscreen",
   "background_color": "#f6f8fb",
   "theme_color": "#f6f8fb",
+  "orientation": "portrait",
   "icons": [
     {
             "src": "./RDPC-app-icon-192.png",

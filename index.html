@@ -28,9 +28,7 @@
       --accent:#0ea5e9; 
       --ok:#10b981; 
       --warn:#f59e0b; 
-      --bad:#ef4444; 
-      --btn1a:#e8eef7; 
-      --btn1b:#dde6f3; 
+      --bad:#ef4444;
       --red1:#ef5350; 
       --red2:#c62828; 
       --red1h:#ff6f6b; 
@@ -64,11 +62,10 @@
     .pill{border:1px solid var(--pillstroke); background:var(--pillbg); padding:6px 10px; border-radius:999px; font-size:12px; font-weight:600; cursor:pointer;}
     .meta {display:flex; justify-content:space-between; align-items:center; margin-top:14px; color:var(--muted); font-size:13px}
     .rate .right {margin-left:auto;}
-    .btn{appearance:none; border:none; background:linear-gradient(180deg, var(--btn1a), var(--btn1b)); color:#0ea5e9; padding:8px 12px; border-radius:10px; font-weight:700; cursor:pointer; border:1px solid var(--stroke); font-size:12px}
-    .btn:disabled{opacity:.6; cursor:default}
-    .btn-refresh{background:linear-gradient(180deg, var(--red1), var(--red2)); color:#fff; border:1px solid rgba(0,0,0,.08);} 
-    .btn-refresh:hover{background:linear-gradient(180deg, var(--red1h), var(--red2h));}
-    .footer{margin-top:14px; font-size:12px; color:var(--muted)}
+    /* Smooth transition for hiding elements */
+    .hide-slide {max-height: 0 !important; opacity: 0 !important; margin-top: 0 !important; margin-bottom: 0 !important; padding-top: 0 !important; padding-bottom: 0 !important; overflow: hidden !important; border: none !important; transition: all 0.4s ease-in-out;}
+    /* Ensure the containers have a transition applied for when they slide back down */
+    .field, .grid {transition: all 0.4s ease-in-out; max-height: 150px;} /* Adjust if your fields are taller than 150px */
     .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px}
     #statusDot{width:10px;height:10px;border-radius:50%;background:var(--warn); display:inline-block; vertical-align:middle; margin-right:6px;animation: blink-full 0.5s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate;}
     @keyframes blink-full {
@@ -93,7 +90,7 @@
         <div>
           <h1 id="appTitle" style="cursor: pointer; user-select: none;">RDPC</h1>
         </div>
-	<span class="pill" id="src">Fetching Live Rate...</span>
+	<span class="pill" id="src">$1 = ₹ ...</span>
       </div>
 
       <div class="grid">
@@ -112,7 +109,7 @@
         </div>
       </div>
 
-      <div class="grid">
+      <div class="grid" id="discountDiacostGrid">
         <div class="field">
           <label>Discount</label>
           <div class="input-container">
@@ -130,7 +127,7 @@
 
       <div class="grid">
         <div class="field">
-          <label>Your Discount</label>
+          <label id="yourDiscountLabel">Your Discount</label>
           <div class="input-container">
             <input id="yourDiscount" type="number" inputmode="decimal" min="0" max="100" step="any">
             <span class="unit">%</span>
@@ -145,7 +142,7 @@
         </div>
       </div>
 
-      <div class="grid">
+      <div class="grid" id="marginProfitGrid">
         <div class="field readonly">
           <label>Margin / ct</label>
           <div class="input-container">
@@ -169,7 +166,7 @@
       </div>
 
       <div class="meta">
-        <div><span id="statusDot"></span><span id="status">Updating ExRate…</span></div>
+        <div><span id="statusDot"></span><span id="status"></span></div>
 	<button id="summaryBtn" class="pill" style="display:flex; align-items:center; justify-content:center; padding: 6px; border-radius: 50%; width: 32px; height: 32px;" aria-label="Summary">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -279,7 +276,7 @@ if (window.matchMedia("(max-width: 767px)").matches) {
   }
 
   async function fetchLiveRate() {
-    setStatus('Updating live rate…');
+    setStatus('Updating ExRate…');
     try {
       const text = await fetchSmart('https://api.frankfurter.app/latest?from=USD&to=INR');
       const data = JSON.parse(text); 
@@ -291,11 +288,11 @@ if (window.matchMedia("(max-width: 767px)").matches) {
         setStatus('LIVE', true);
         calculate();
       } else {
-        setStatus('Error interpreting live rates');
+        setStatus('Error interpreting ExRates');
       }
     } catch(err) {
       console.error(err);
-      setStatus('Error fetching live rate');
+      setStatus('Error fetching ExRate');
     }
   }
 
@@ -308,14 +305,53 @@ if (window.matchMedia("(max-width: 767px)").matches) {
     fetchLiveRate();
   });
 
-  appTitleEl.addEventListener('click', () => {
-    window.location.reload();
-  });
-
   const summaryBtn = document.getElementById('summaryBtn');
-  summaryBtn.addEventListener('click', () => {
-    alert("Summary clicked!");
-  });
+  const rdpcTitle = document.getElementById('appTitle');
+  const yourDiscountLabel = document.getElementById('yourDiscountLabel');
+
+  const toggleElements = [
+    document.getElementById('discountDiacostGrid'),
+    document.getElementById('marginProfitGrid'),
+    summaryBtn
+  ];
+
+  if (summaryBtn) {
+    summaryBtn.addEventListener('click', () => {
+      toggleElements.forEach(el => {
+        if (el) el.classList.add('hide-slide');
+      });
+    
+      if (yourDiscountLabel) {
+        yourDiscountLabel.textContent = 'Discount';
+      }
+    });
+  }
+
+  let pressTimer;
+  const startPress = (e) => {
+    pressTimer = setTimeout(() => {
+      toggleElements.forEach(el => {
+        if (el) el.classList.remove('hide-slide');
+      });
+    
+      if (yourDiscountLabel) {
+        yourDiscountLabel.textContent = 'Your Discount';
+      }
+    }, 3000); 
+  };
+
+  const cancelPress = () => {
+    clearTimeout(pressTimer); // Cancel if let go before 3 seconds
+  };
+
+  if (rdpcTitle) {
+    rdpcTitle.addEventListener('mousedown', startPress);
+    rdpcTitle.addEventListener('touchstart', startPress);
+    rdpcTitle.addEventListener('mouseup', cancelPress);
+    rdpcTitle.addEventListener('mouseleave', cancelPress);
+    rdpcTitle.addEventListener('touchend', cancelPress);
+    rdpcTitle.addEventListener('touchcancel', cancelPress);
+  }
 
   // Initialize
   fetchLiveRate();

@@ -161,6 +161,13 @@
         </div>
       </div>
 
+      <div class="field readonly">
+        <label>Total Diamond Price</label>
+        <div class="input-container">
+          <span>₹</span><input id="totalPrice" type="text" readonly placeholder="0.00">          
+        </div>
+      </div>
+
       <div class="meta">
         <div><span id="statusDot"></span><span id="status">Updating ExRate…</span></div>
 	<button id="summaryBtn" class="pill" style="display:flex; align-items:center; justify-content:center; padding: 6px; border-radius: 50%; width: 32px; height: 32px;" aria-label="Summary">
@@ -194,7 +201,7 @@ if (window.matchMedia("(max-width: 767px)").matches) {
   const marginPerCtEl = document.getElementById('marginPerCt');
   const weightEl = document.getElementById('weight');
   const profitEl = document.getElementById('profit');
-
+  const totalPriceEl = document.getElementById('totalPrice');
   const statusEl = document.getElementById('status');
   const dotEl = document.getElementById('statusDot');
   const srcPill = document.getElementById('src');
@@ -230,12 +237,14 @@ if (window.matchMedia("(max-width: 767px)").matches) {
     // Output generation
     const marginPerCtInr = pricePerCtInr - costPerCtInr;
     const totalProfit = marginPerCtInr * weight;
+    const totalDiamondPrice = pricePerCtInr * weight;
 
     // Sync views
     costPerCtEl.value = fmt(costPerCtInr);
     pricePerCtEl.value = fmt(pricePerCtInr);
     marginPerCtEl.value = fmt(marginPerCtInr);
     profitEl.value = fmt(totalProfit);
+    totalPriceEl.value = fmt(totalDiamondPrice);
   }
 
   function setStatus(text, ok=false){

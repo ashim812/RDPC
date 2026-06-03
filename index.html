@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>RDPC</title>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f0f0f">
+
+  <link rel="icon" type="image/png" href="RDPC-app-icon-favicon.png">
+
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="RDPC">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="apple-touch-icon" href="RDPC-app-icon-ati.png">
+
+  <meta name="msapplication-TileColor" content="#0f0f0f">
+  <meta name="msapplication-TileImage" content="RDPC-app-icon-512.png">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+      if (!window.tailwind) {
+          document.write('<script src="tailwind.min.js"><\/script>');
+      }
+  </script>
+
+  <style>
+    :root { 
+      --bg:#f6f8fb; 
+      --card:#ffffff; 
+      --text:#0f172a; 
+      --muted:#5b6b7c; 
+      --accent:#0ea5e9; 
+      --ok:#10b981; 
+      --warn:#f59e0b; 
+      --bad:#ef4444; 
+      --btn1a:#e8eef7; 
+      --btn1b:#dde6f3; 
+      --red1:#ef5350; 
+      --red2:#c62828; 
+      --red1h:#ff6f6b; 
+      --red2h:#d32f2f; 
+      --shadow:0 12px 30px rgba(15, 23, 42, .12); 
+      --stroke:rgba(2,6,23,.08); 
+      --pillbg:rgba(2,6,23,.04); 
+      --pillstroke:rgba(2,6,23,.08); 
+      --bg-grad1:#f0f4f8; 
+      --bg-grad2:#e6edf5; 
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0; font:16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji"; background:radial-gradient(1200px 600px at 80% -10%, var(--bg-grad1) 0, var(--bg-grad2) 50%), var(--bg); color:var(--text); display:grid; place-items:center;}
+    .wrap{width:min(500px, 94vw); margin: 20px 0;} 
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01)); border:1px solid var(--stroke); border-radius:20px; padding:22px; box-shadow:var(--shadow)}
+    h1{font-weight:700; font-size:clamp(18px, 2.4vw, 24px); margin:0 0 4px}
+    .topbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px}
+    p.sub{color:var(--muted); margin:0 0 16px; font-size:14px;}
+    
+    .field{background:var(--card); border:1px solid var(--stroke); border-radius:14px; padding:12px; position:relative; margin-bottom:12px}
+    .field.readonly{background:rgba(0,0,0,0.05); border-style: dashed;}
+    .field.highlight{border-color: var(--accent);}
+    
+    label{display:flex; justify-content:space-between; font-size:12px; color:var(--muted); letter-spacing:.3px; margin-bottom:4px}
+    .label-badge{font-weight:700; color:var(--accent)}
+    
+    .input-container { display:flex; align-items:center; justify-content:space-between; }
+    input{width:100%; background:transparent; border:none; outline:none; color:var(--text); font-size:20px; font-weight:600}
+    input:disabled{color:var(--text); opacity:1; -webkit-text-fill-color: var(--text);}
+    .unit{font-size:18px; color:var(--muted); font-weight:500; margin-left:8px}
+
+    .divider{height:1px; background:var(--stroke); margin:16px 0; border:none;}
+    
+    .rate{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px; color:var(--muted)}
+    .pill{border:1px solid var(--pillstroke); background:var(--pillbg); padding:6px 10px; border-radius:999px; font-size:12px; font-weight:600;}
+    .meta {display:flex; justify-content:space-between; align-items:center; margin-top:14px; color:var(--muted); font-size:13px}
+    .rate .right {margin-left:auto;}
+    .btn{appearance:none; border:none; background:linear-gradient(180deg, var(--btn1a), var(--btn1b)); color:#0ea5e9; padding:8px 12px; border-radius:10px; font-weight:700; cursor:pointer; border:1px solid var(--stroke); font-size:12px}
+    .btn:disabled{opacity:.6; cursor:default}
+    .btn-refresh{background:linear-gradient(180deg, var(--red1), var(--red2)); color:#fff; border:1px solid rgba(0,0,0,.08);} 
+    .btn-refresh:hover{background:linear-gradient(180deg, var(--red1h), var(--red2h));}
+    .footer{margin-top:14px; font-size:12px; color:var(--muted)}
+    .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px}
+    #statusDot{width:10px;height:10px;border-radius:50%;background:var(--warn); display:inline-block; vertical-align:middle; margin-right:6px}
+  </style>
+</head>
+<body>
+
+  <div class="wrap">
+    <div class="card">
+      <div class="topbar">
+        <div>
+          <h1>RAPAPORT Diamond Price Calc</h1>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="field">
+          <label>Matrix Number</label>
+          <div class="input-container">
+            <input id="matrix" type="number" inputmode="numeric" min="0" step="any">
+          </div>
+        </div>
+        <div class="field">
+          <label>Discount</label>
+          <div class="input-container">
+            <input id="discount" type="number" inputmode="decimal" min="0" max="100" step="any">
+            <span class="unit">%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="field readonly">
+        <label>Diamond Cost / ct</label>
+        <div class="input-container">
+          <span>₹</span><input id="costPerCt" type="text" readonly placeholder="0.00">          
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="field">
+        <label>Your Discount</label>
+        <div class="input-container">
+          <input id="yourDiscount" type="number" inputmode="decimal" min="0" max="100" step="any">
+          <span class="unit">%</span>
+        </div>
+      </div>
+
+      <div class="field readonly">
+        <label>Diamond Price / ct</label>
+        <div class="input-container">
+          <span>₹</span><input id="pricePerCt" type="text" readonly placeholder="0.00">
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="field readonly">
+        <label>Margin / ct</label>
+        <div class="input-container">
+          <span>₹</span><input id="marginPerCt" type="text" readonly placeholder="0.00">          
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Weight</label>
+        <div class="input-container">
+          <input id="weight" type="number" inputmode="decimal" min="0" step="any">
+          <span class="unit">ct</span>
+        </div>
+      </div>
+
+      <div class="field readonly highlight">
+        <label>Profit</label>
+        <div class="input-container">
+          <span>₹</span><input id="profit" type="text" readonly placeholder="0.00" style="color:var(--ok); font-size:24px;">          
+        </div>
+      </div>
+
+      <div class="rate" id="rateRow">
+        <span class="pill" id="src">Fetching Live Rate...</span>
+        <div class="right">
+          <button id="refresh" class="btn btn-refresh"> Rates &#x21BB </button>
+        </div>
+      </div>
+
+      <div class="meta">
+        <div><span id="statusDot"></span><span id="status">Updating exchange rate…</span></div>
+        <div class="footer">
+          <div>Updated: <span id="updated">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  // Elements
+  const matrixEl = document.getElementById('matrix');
+  const discountEl = document.getElementById('discount');
+  const costPerCtEl = document.getElementById('costPerCt');
+  const yourDiscountEl = document.getElementById('yourDiscount');
+  const pricePerCtEl = document.getElementById('pricePerCt');
+  const marginPerCtEl = document.getElementById('marginPerCt');
+  const weightEl = document.getElementById('weight');
+  const profitEl = document.getElementById('profit');
+
+  const statusEl = document.getElementById('status');
+  const dotEl = document.getElementById('statusDot');
+  const updatedEl = document.getElementById('updated');
+  const refreshBtn = document.getElementById('refresh');
+  const srcPill = document.getElementById('src');
+
+  // Internal State
+  let currentExRate = 0; // Holds the live rate for calculations
+
+  // Numbers formatter
+  function fmt(n) {
+    if (isNaN(n) || !isFinite(n)) return '0.00';
+    return Number(n).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  }
+
+  // Math calculations
+  function calculate() {
+    const matrix = parseFloat(matrixEl.value) || 0;
+    const discount = parseFloat(discountEl.value) || 0;
+    const yourDiscount = parseFloat(yourDiscountEl.value) || 0;
+    const weight = parseFloat(weightEl.value) || 0;
+    const basePriceUsd = matrix * 100;
+    
+    // Fallback to 0 if rate hasn't loaded yet
+    const exRate = currentExRate || 0; 
+
+    // Cost calculations
+    const costPerCtUsd = basePriceUsd * (1 - (discount / 100));
+    const costPerCtInr = costPerCtUsd * exRate;
+
+    // Price calculations
+    const pricePerCtUsd = basePriceUsd * (1 - (yourDiscount / 100));
+    const pricePerCtInr = pricePerCtUsd * exRate;
+
+    // Output generation
+    const marginPerCtInr = pricePerCtInr - costPerCtInr;
+    const totalProfit = marginPerCtInr * weight;
+
+    // Sync views
+    costPerCtEl.value = fmt(costPerCtInr);
+    pricePerCtEl.value = fmt(pricePerCtInr);
+    marginPerCtEl.value = fmt(marginPerCtInr);
+    profitEl.value = fmt(totalProfit);
+  }
+
+  function setStatus(text, ok=false){
+    statusEl.textContent = text;
+    dotEl.style.background = ok ? 'var(--ok)' : 'var(--warn)';
+  }
+
+  // Smart Fetch Logic with Proxy Fallbacks
+  async function fetchSmart(url) {
+    const uniqueUrl = url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
+    let text = '';
+
+    try {
+      const response = await fetch(uniqueUrl);
+      if (!response.ok) throw new Error('Direct fetch failed');
+      text = await response.text();
+    } catch (directError) {
+      console.warn("Direct fetch failed, trying proxy...", directError);
+      try {
+        const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(uniqueUrl);
+        const proxyResponse = await fetch(proxyUrl);
+        if (!proxyResponse.ok) throw new Error('Corsproxy failed');
+        text = await proxyResponse.text();
+      } catch (proxyError) {
+        console.warn("Corsproxy failed, trying allorigins...", proxyError);
+        const backupProxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(uniqueUrl);
+        const backupResponse = await fetch(backupProxy);
+        if (!backupResponse.ok) throw new Error('All proxies failed');
+        text = await backupResponse.text();
+      }
+    }
+    return text;
+  }
+
+  async function fetchLiveRate() {
+    setStatus('Updating live rate…');
+    refreshBtn.disabled = true;
+    try {
+      const text = await fetchSmart('https://api.frankfurter.app/latest?from=USD&to=INR');
+      const data = JSON.parse(text); 
+      const rate = data && data.rates && data.rates['INR'];
+      
+      if(typeof rate === 'number' && isFinite(rate) && rate > 0) {
+        currentExRate = rate;
+        srcPill.textContent = `$1 = ₹ ${rate.toFixed(2)}`;
+        setStatus('LIVE', true);
+        updatedEl.textContent = new Date().toLocaleTimeString();
+        calculate();
+      } else {
+        setStatus('Error interpreting live rates');
+      }
+    } catch(err) {
+      console.error(err);
+      setStatus('Error fetching live rate');
+    }
+    refreshBtn.disabled = false;
+  }
+
+  // Listeners
+  [matrixEl, discountEl, yourDiscountEl, weightEl].forEach(el => {
+    el.addEventListener('input', calculate);
+  });
+
+  refreshBtn.addEventListener('click', fetchLiveRate);
+
+  // Initialize
+  fetchLiveRate();
+  setInterval(fetchLiveRate, 60 * 1000); // sync every 60 seconds
+})();
+</script>
+</body>
+</html>

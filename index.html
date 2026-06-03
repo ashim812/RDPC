@@ -216,7 +216,6 @@ if (window.matchMedia("(max-width: 767px)").matches) {
   const srcPill = document.getElementById('src');
   const appTitleEl = document.getElementById('appTitle');
   const shareBtn = document.getElementById('shareBtn');
-  const cardEl = document.querySelector('.card');
 
   // Internal State
   let currentExRate = 0; // Holds the live rate for calculations
@@ -314,6 +313,14 @@ if (window.matchMedia("(max-width: 767px)").matches) {
   [matrixEl, discountEl, yourDiscountEl, weightEl].forEach(el => {
     el.addEventListener('input', calculate);
   });
+  [weightEl].forEach(el => {
+    el.addEventListener('blur', function() {
+      if (this.value) {
+        this.value = parseFloat(this.value).toFixed(2);
+        calculate(); 
+      }
+    });
+  });
 
   srcPill.addEventListener('click', () => {
     fetchLiveRate();
@@ -369,35 +376,35 @@ if (window.matchMedia("(max-width: 767px)").matches) {
 
   if (shareBtn) {
     shareBtn.addEventListener('click', async () => {
-      const buttonWrapper = shareBtn.parentElement;
-      buttonWrapper.style.display = 'none';
+      const weight = parseFloat(weightEl.value) || 0;
+      const yourDiscount = parseFloat(yourDiscountEl.value) || 0;
+      const totalPriceEl = document.getElementById('totalPrice');
+      const totalPriceVal = totalPriceEl ? totalPriceEl.value : '0.00';
 
-      try {
-        const canvas = await html2canvas(cardEl, {
-          scale: 2, // High resolution for crisp text
-          backgroundColor: '#ffffff',
-          borderRadius: 20
-        });
+      //Share text
+      const shareText = `Diamond Details\n\n` +
+        `Colour: \n` +
+	`Purity: \n` +
+        `Discount: ${yourDiscount}%\n` +
+        `Diamond Price / ct: ₹${pricePerCtEl.value}\n` +
+        `Weight: ${weight.toFixed(2)} ct\n` +
+        `Total Diamond Price: ₹${totalPriceVal}`;
 
-        buttonWrapper.style.display = 'flex';
-        canvas.toBlob(async (blob) => {
-          const file = new File([blob], "RDPC-Quote.png", { type: "image/png" });
-          if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({
-              title: 'Diamond Price Quote',
-              files: [file]
-            });
-          } else {
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'RDPC-Quote.png';
-            link.click();
-          }
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: 'RDPC sharing',
+            text: shareText
+          });
+        } catch (err) {
+          console.log('Share canceled or failed:', err);
+        }
+      } else {
+        navigator.clipboard.writeText(shareText).then(() => {
+          alert('Details copied to clipboard!');
+        }).catch(err => {
+          console.error('Failed to copy text: ', err);
         });
-      } catch (err) {
-        console.error("Failed to take screenshot:", err);
-        buttonWrapper.style.display = 'flex';
-        alert("Could not generate screenshot.");
       }
     });
   }

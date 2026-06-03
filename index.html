@@ -85,7 +85,7 @@
     <div class="card">
       <div class="topbar">
         <div>
-          <h1>RAPAPORT Diamond Price Calc</h1>
+          <h1>RDPC</h1>
         </div>
       </div>
 
@@ -105,51 +105,56 @@
         </div>
       </div>
 
-      <div class="field readonly">
-        <label>Diamond Cost / ct</label>
-        <div class="input-container">
-          <span>₹</span><input id="costPerCt" type="text" readonly placeholder="0.00">          
+      <div class="grid">
+        <div class="field">
+          <label>Weight</label>
+          <div class="input-container">
+            <input id="weight" type="number" inputmode="decimal" min="0" step="any">
+            <span class="unit">ct</span>
+          </div>
+        </div>
+        <div class="field readonly">
+          <label>Diamond Cost / ct</label>
+          <div class="input-container">
+            <span>₹</span><input id="costPerCt" type="text" readonly placeholder="0.00">          
+          </div>
         </div>
       </div>
 
       <hr class="divider">
 
-      <div class="field">
-        <label>Your Discount</label>
-        <div class="input-container">
-          <input id="yourDiscount" type="number" inputmode="decimal" min="0" max="100" step="any">
-          <span class="unit">%</span>
+      <div class="grid">
+        <div class="field">
+          <label>Your Discount</label>
+          <div class="input-container">
+            <input id="yourDiscount" type="number" inputmode="decimal" min="0" max="100" step="any">
+            <span class="unit">%</span>
+          </div>
         </div>
-      </div>
 
-      <div class="field readonly">
-        <label>Diamond Price / ct</label>
-        <div class="input-container">
-          <span>₹</span><input id="pricePerCt" type="text" readonly placeholder="0.00">
+        <div class="field readonly">
+          <label>Diamond Price / ct</label>
+          <div class="input-container">
+            <span>₹</span><input id="pricePerCt" type="text" readonly placeholder="0.00">
+          </div>
         </div>
       </div>
 
       <hr class="divider">
 
-      <div class="field readonly">
-        <label>Margin / ct</label>
-        <div class="input-container">
-          <span>₹</span><input id="marginPerCt" type="text" readonly placeholder="0.00">          
+      <div class="grid">
+        <div class="field readonly">
+          <label>Margin / ct</label>
+          <div class="input-container">
+            <span>₹</span><input id="marginPerCt" type="text" readonly placeholder="0.00">          
+          </div>
         </div>
-      </div>
 
-      <div class="field">
-        <label>Weight</label>
-        <div class="input-container">
-          <input id="weight" type="number" inputmode="decimal" min="0" step="any">
-          <span class="unit">ct</span>
-        </div>
-      </div>
-
-      <div class="field readonly highlight">
-        <label>Profit</label>
-        <div class="input-container">
-          <span>₹</span><input id="profit" type="text" readonly placeholder="0.00" style="color:var(--ok); font-size:24px;">          
+        <div class="field readonly highlight">
+          <label>Profit</label>
+          <div class="input-container">
+            <span>₹</span><input id="profit" type="text" readonly placeholder="0.00" style="color:var(--ok); font-size:24px;">          
+          </div>
         </div>
       </div>
 

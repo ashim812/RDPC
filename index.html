@@ -161,13 +161,22 @@
         <div class="field readonly highlight">
           <label>Profit</label>
           <div class="input-container">
-            <span>₹</span><input id="profit" type="text" readonly placeholder="0.00" style="color:var(--ok); font-size:24px;">          
+            <span>₹</span><input id="profit" type="text" readonly placeholder="0.00">          
           </div>
         </div>
       </div>
 
       <div class="meta">
         <div><span id="statusDot"></span><span id="status">Updating ExRate…</span></div>
+	<button id="summaryBtn" class="pill" style="display:flex; align-items:center; justify-content:center; padding: 6px; border-radius: 50%; width: 32px; height: 32px;" aria-label="Summary">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <text x="12" y="20" font-family="Arial" font-size="8" font-weight="bold" fill="currentColor" stroke="none" text-anchor="middle">₹</text>
+	      <line x1="8" y1="7" x2="11" y2="7"></line>
+	      <line x1="8" y1="11.5" x2="16" y2="11.5"></line>
+              </svg>
+        </button>
       </div>
     </div>
   </div>
@@ -202,7 +211,7 @@ if (window.matchMedia("(max-width: 767px)").matches) {
   // Numbers formatter
   function fmt(n) {
     if (isNaN(n) || !isFinite(n)) return '0.00';
-    return Number(n).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    return Number(n).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
   }
 
   function calculate() {
@@ -297,6 +306,11 @@ if (window.matchMedia("(max-width: 767px)").matches) {
 
   appTitleEl.addEventListener('click', () => {
     window.location.reload();
+  });
+
+  const summaryBtn = document.getElementById('summaryBtn');
+  summaryBtn.addEventListener('click', () => {
+    alert("Summary clicked!");
   });
 
   // Initialize

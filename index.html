@@ -64,7 +64,21 @@
     .rate .right {margin-left:auto;}
     .hide-slide {max-height: 0 !important; opacity: 0 !important; margin-top: 0 !important; margin-bottom: 0 !important; padding-top: 0 !important; padding-bottom: 0 !important; overflow: hidden !important; border: none !important; transition: all 0.4s ease-in-out;}
     .field, .grid {transition: all 0.4s ease-in-out; max-height: 150px;} /* Adjust if your fields are taller than 150px */
-    .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px}
+    .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:1px}
+    @keyframes blink-red {
+      0%, 100% { 
+        border-color: var(--bad); 
+        box-shadow: 0 0 8px rgba(239, 68, 68, 0.5); 
+      }
+      50% { 
+        border-color: var(--stroke); 
+        box-shadow: none; 
+      }
+    }
+    .field.error-highlight {
+      animation: blink-red 1s infinite;
+      border-color: var(--bad);
+    }
     #statusDot{width:10px;height:10px;border-radius:50%;background:var(--warn); display:inline-block; vertical-align:middle; margin-right:6px;animation: blink-full 0.5s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate;}
     @keyframes blink-full {
       0% { opacity: 1; }
@@ -90,9 +104,30 @@
 	<span class="pill" id="src">$1 = ₹ ...</span>
       </div>
   
-  <div class="grid">
+      <div class="grid">
         <div class="field">
-          <label>Colour</label>
+          <label>Diamond Type</label>
+          <div class="input-container">
+            <input id="diamondType" type="text" list="type-options" autocomplete="off">
+            <datalist id="type-options">
+              <option value="Natural"></option><option value="Lab Grown"></option>
+            </datalist>
+          </div>
+        </div>
+        <div class="field">
+          <label>Certification</label>
+          <div class="input-container">
+            <input id="certification" type="text" list="cert-options" autocomplete="off">
+            <datalist id="cert-options">
+              <option value="GIA"></option><option value="IGI"></option><option value="HRD"></option><option value="Non-Certified"></option>
+            </datalist>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="field">
+          <label>Color Grade</label>
           <div class="input-container">
             <input id="colour" type="text" list="colour-options" autocomplete="off" style="text-transform: uppercase;">
             <datalist id="colour-options">
@@ -109,10 +144,10 @@
           </div>
         </div>
         <div class="field">
-          <label>Purity</label>
+          <label>Clarity Grade</label>
           <div class="input-container">
-            <input id="purity" type="text" list="purity-options" autocomplete="off" style="text-transform: uppercase;">
-            <datalist id="purity-options">
+            <input id="clarity" type="text" list="clarity-options" autocomplete="off" style="text-transform: uppercase;">
+            <datalist id="clarity-options">
               <option value="IF"></option><option value="IF-VVS"></option><option value="VVS"></option><option value="VVS1"></option>
 	      <option value="VVS2"></option><option value="VS"></option><option value="VS1"></option><option value="VS2"></option>
 	      <option value="SI"></option><option value="SI1"></option><option value="SI2"></option><option value="SI3"></option>
@@ -132,7 +167,7 @@
         <div class="field">
           <label>Weight</label>
           <div class="input-container">
-            <input id="weight" type="number" inputmode="decimal" min="0" step="any">
+            <input id="weight" type="number" inputmode="decimal" min="0" step="any" placeholder="0.00">
             <span class="unit">ct</span>
           </div>
         </div>
@@ -142,14 +177,14 @@
         <div class="field">
           <label>Discount</label>
           <div class="input-container">
-            <input id="discount" type="number" inputmode="decimal" min="0" max="100" step="any">
+            <input id="discount" type="number" inputmode="decimal" min="0" max="100" step="any" placeholder="0">
             <span class="unit">%</span>
           </div>
         </div>
         <div class="field readonly">
           <label>Diamond Cost / ct</label>
           <div class="input-container">
-            <span>₹</span><input id="costPerCt" type="text" readonly placeholder="0.00">          
+            <span>₹</span><input id="costPerCt" type="text" readonly placeholder="0">          
           </div>
         </div>
       </div>
@@ -158,7 +193,7 @@
         <div class="field">
           <label id="yourDiscountLabel">Your Discount</label>
           <div class="input-container">
-            <input id="yourDiscount" type="number" inputmode="decimal" min="0" max="100" step="any">
+            <input id="yourDiscount" type="number" inputmode="decimal" min="0" max="100" step="any" placeholder="0">
             <span class="unit">%</span>
           </div>
         </div>
@@ -166,7 +201,7 @@
         <div class="field readonly">
           <label>Diamond Price / ct</label>
           <div class="input-container">
-            <span>₹</span><input id="pricePerCt" type="text" readonly placeholder="0.00">
+            <span>₹</span><input id="pricePerCt" type="text" readonly placeholder="0">
           </div>
         </div>
       </div>
@@ -175,14 +210,14 @@
         <div class="field readonly">
           <label>Margin / ct</label>
           <div class="input-container">
-            <span>₹</span><input id="marginPerCt" type="text" readonly placeholder="0.00">          
+            <span>₹</span><input id="marginPerCt" type="text" readonly placeholder="0">          
           </div>
         </div>
 
         <div class="field readonly highlight">
           <label>Profit</label>
           <div class="input-container">
-            <span>₹</span><input id="profit" type="text" readonly placeholder="0.00">          
+            <span>₹</span><input id="profit" type="text" readonly placeholder="0">          
           </div>
         </div>
       </div>
@@ -190,7 +225,7 @@
       <div class="field readonly">
         <label>Total Diamond Price</label>
         <div class="input-container">
-          <span>₹</span><input id="totalPrice" type="text" readonly placeholder="0.00">          
+          <span>₹</span><input id="totalPrice" type="text" readonly placeholder="0">          
         </div>
       </div>
 
@@ -226,7 +261,7 @@ if (window.matchMedia("(max-width: 767px)").matches) {
 
 (() => {
   const colourEl = document.getElementById('colour');
-  const purityEl = document.getElementById('purity');
+  const clarityEl = document.getElementById('clarity');
   const matrixEl = document.getElementById('matrix');
   const discountEl = document.getElementById('discount');
   const costPerCtEl = document.getElementById('costPerCt');
@@ -247,8 +282,8 @@ if (window.matchMedia("(max-width: 767px)").matches) {
 
   // Numbers formatter
   function fmt(n) {
-    if (isNaN(n) || !isFinite(n)) return '0.00';
-    return Number(n).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    if (isNaN(n) || !isFinite(n)) return '0';
+    return Number(n).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0});
   }
 
   function calculate() {
@@ -346,7 +381,7 @@ if (window.matchMedia("(max-width: 767px)").matches) {
       }
     });
   });
-  [colourEl, purityEl].forEach(el => {
+  [colourEl, clarityEl].forEach(el => {
     if (el) {
       el.addEventListener('input', function() {
         const start = this.selectionStart;
@@ -410,21 +445,59 @@ if (window.matchMedia("(max-width: 767px)").matches) {
   }
 
   if (shareBtn) {
+    const requiredInputs = ['diamondType', 'certification', 'colour', 'clarity', 'matrix', 'weight', 'discount', 'yourDiscount'];
+    requiredInputs.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', function() {
+          const field = this.closest('.field');
+          if (field && this.value.trim() !== '') {
+            field.classList.remove('error-highlight');
+          }
+        });
+      }
+    });
     shareBtn.addEventListener('click', async () => {
+      let isFormValid = true;
+      requiredInputs.forEach(id => {
+        const inputEl = document.getElementById(id);
+        if (inputEl) {
+          const fieldEl = inputEl.closest('.field');
+          if (inputEl.value.trim() === '') {
+            if (fieldEl) fieldEl.classList.add('error-highlight');
+            isFormValid = false;
+          } else {
+            if (fieldEl) fieldEl.classList.remove('error-highlight');
+          }
+        }
+      });
+
+      if (!isFormValid) {
+        if (navigator.vibrate) navigator.vibrate(200); 
+        return; 
+      }
+
+      const typeVal = document.getElementById('diamondType').value || '';
+      const certVal = document.getElementById('certification').value || '';
       const colourVal = document.getElementById('colour').value || '';
-      const purityVal = document.getElementById('purity').value || '';
+      const clarityVal = document.getElementById('clarity').value || '';
       const weight = parseFloat(weightEl.value) || 0;
       const yourDiscount = parseFloat(yourDiscountEl.value) || 0;
       const totalPriceEl = document.getElementById('totalPrice');
-      const totalPriceVal = totalPriceEl ? totalPriceEl.value : '0.00';
+      const totalPriceVal = totalPriceEl ? totalPriceEl.value : '0';
+      const encodingMap = {1: 'B', 2: 'R', 3: 'I', 4: 'J', 5: 'M', 6: 'O', 7: 'H', 8: 'A', 9: 'N', 0: 'X'};
+      let codedDiscount = yourDiscount.toString();
+      for (const [key, value] of Object.entries(encodingMap)) {
+        codedDiscount = codedDiscount.replace(new RegExp(key, 'g'), value);
+      }
 
       //Share text
-      const shareText = `Diamond Details\n\n` +
-        `Colour: ${colourVal}\n` +
-	`Purity: ${purityVal}\n` +
-        `Discount: ${yourDiscount}%\n` +
+      const shareText = `E${codedDiscount}\n\n` +
+	`${typeVal} Diamond - ${certVal}\n\n` +
+        `Color Grade: *${colourVal}*\n` +
+	`Clarity Grade: *${clarityVal}*\n` +
+        `Carat Weight: *${weight.toFixed(2)} ct*\n` +
         `Price/ct: ₹ ${pricePerCtEl.value}\n` +
-        `Weight: ${weight.toFixed(2)} ct\n` +
         `Total Price: ₹ ${totalPriceVal}`;
 
       if (navigator.share) {

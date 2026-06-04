@@ -62,9 +62,7 @@
     .pill{border:1px solid var(--pillstroke); background:var(--pillbg); padding:6px 10px; border-radius:999px; font-size:12px; font-weight:600; cursor:pointer;}
     .meta {display:flex; justify-content:space-between; align-items:center; margin-top:14px; color:var(--muted); font-size:13px}
     .rate .right {margin-left:auto;}
-    /* Smooth transition for hiding elements */
     .hide-slide {max-height: 0 !important; opacity: 0 !important; margin-top: 0 !important; margin-bottom: 0 !important; padding-top: 0 !important; padding-bottom: 0 !important; overflow: hidden !important; border: none !important; transition: all 0.4s ease-in-out;}
-    /* Ensure the containers have a transition applied for when they slide back down */
     .field, .grid {transition: all 0.4s ease-in-out; max-height: 150px;} /* Adjust if your fields are taller than 150px */
     .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px}
     #statusDot{width:10px;height:10px;border-radius:50%;background:var(--warn); display:inline-block; vertical-align:middle; margin-right:6px;animation: blink-full 0.5s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate;}
@@ -80,7 +78,6 @@
   <div class="orientation-warning">
     <div class="warning-text">
       <p style="font-size: 24px; font-weight: bold;">Please Rotate Your Device</p>
-      <p>This app is optimized for portrait view on smartphones.</p>
     </div>
   </div>
 
@@ -91,6 +88,38 @@
           <h1 id="appTitle" style="cursor: pointer; user-select: none;">RDPC</h1>
         </div>
 	<span class="pill" id="src">$1 = ₹ ...</span>
+      </div>
+  
+  <div class="grid">
+        <div class="field">
+          <label>Colour</label>
+          <div class="input-container">
+            <input id="colour" type="text" list="colour-options" autocomplete="off" style="text-transform: uppercase;">
+            <datalist id="colour-options">
+	      <option value="D"></option><option value="E"></option><option value="F"></option><option value="G"></option>
+              <option value="H"></option><option value="I"></option><option value="J"></option><option value="K"></option>
+              <option value="L"></option><option value="M"></option><option value="N"></option><option value="O"></option>
+	      <option value="P"></option><option value="Q"></option><option value="R"></option><option value="S"></option>
+	      <option value="T"></option><option value="U"></option><option value="V"></option><option value="W"></option>
+	      <option value="X"></option><option value="Y"></option><option value="Z"></option><option value="D-F"></option>
+	      <option value="G-H"></option><option value="I-J"></option><option value="K-L"></option><option value="M-N"></option>
+	      <option value="O-P"></option><option value="Q-R"></option><option value="S-T"></option><option value="U-V"></option>
+	      <option value="W-X"></option><option value="Y-Z"></option>              
+            </datalist>
+          </div>
+        </div>
+        <div class="field">
+          <label>Purity</label>
+          <div class="input-container">
+            <input id="purity" type="text" list="purity-options" autocomplete="off" style="text-transform: uppercase;">
+            <datalist id="purity-options">
+              <option value="IF"></option><option value="IF-VVS"></option><option value="VVS"></option><option value="VVS1"></option>
+	      <option value="VVS2"></option><option value="VS"></option><option value="VS1"></option><option value="VS2"></option>
+	      <option value="SI"></option><option value="SI1"></option><option value="SI2"></option><option value="SI3"></option>
+	      <option value="I"></option><option value="I1"></option><option value="I2"></option><option value="I3"></option>
+            </datalist>
+          </div>
+        </div>
       </div>
 
       <div class="grid">
@@ -196,6 +225,8 @@ if (window.matchMedia("(max-width: 767px)").matches) {
 }
 
 (() => {
+  const colourEl = document.getElementById('colour');
+  const purityEl = document.getElementById('purity');
   const matrixEl = document.getElementById('matrix');
   const discountEl = document.getElementById('discount');
   const costPerCtEl = document.getElementById('costPerCt');
@@ -315,6 +346,16 @@ if (window.matchMedia("(max-width: 767px)").matches) {
       }
     });
   });
+  [colourEl, purityEl].forEach(el => {
+    if (el) {
+      el.addEventListener('input', function() {
+        const start = this.selectionStart;
+        const end = this.selectionEnd;
+        this.value = this.value.toUpperCase();
+        this.setSelectionRange(start, end);
+      });
+    }
+  });
 
   srcPill.addEventListener('click', () => {
     fetchLiveRate();
@@ -370,6 +411,8 @@ if (window.matchMedia("(max-width: 767px)").matches) {
 
   if (shareBtn) {
     shareBtn.addEventListener('click', async () => {
+      const colourVal = document.getElementById('colour').value || '';
+      const purityVal = document.getElementById('purity').value || '';
       const weight = parseFloat(weightEl.value) || 0;
       const yourDiscount = parseFloat(yourDiscountEl.value) || 0;
       const totalPriceEl = document.getElementById('totalPrice');
@@ -377,8 +420,8 @@ if (window.matchMedia("(max-width: 767px)").matches) {
 
       //Share text
       const shareText = `Diamond Details\n\n` +
-        `Colour: \n` +
-	`Purity: \n` +
+        `Colour: ${colourVal}\n` +
+	`Purity: ${purityVal}\n` +
         `Discount: ${yourDiscount}%\n` +
         `Price/ct: ₹ ${pricePerCtEl.value}\n` +
         `Weight: ${weight.toFixed(2)} ct\n` +

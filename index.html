@@ -322,15 +322,38 @@ if (window.matchMedia("(max-width: 767px)").matches) {
     dotEl.style.background = ok ? 'var(--ok)' : 'var(--warn)';
   }
 
+  async function fetchSmart(url) {
+    const uniqueUrl = url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
+    let text = '';
+
+    try {
+      const response = await fetch(uniqueUrl);
+      if (!response.ok) throw new Error('Direct fetch failed');
+      text = await response.text();
+    } catch (directError) {
+      console.warn("Direct fetch failed, trying proxy...", directError);
+      try {
+        const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(uniqueUrl);
+        const proxyResponse = await fetch(proxyUrl);
+        if (!proxyResponse.ok) throw new Error('Corsproxy failed');
+        text = await proxyResponse.text();
+      } catch (proxyError) {
+        console.warn("Corsproxy failed, trying allorigins...", proxyError);
+        const backupProxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(uniqueUrl);
+        const backupResponse = await fetch(backupProxy);
+        if (!backupResponse.ok) throw new Error('All proxies failed');
+        text = await backupResponse.text();
+      }
+    }
+    return text;
+  }
+
   async function fetchLiveRate() {
     setStatus('Updating ExRate…');
     try {
-      const response = await fetch('https://api.frankfurter.dev/v2/rate/USD/INR');
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json(); 
-      const rate = data && data.rate;
+      const text = await fetchSmart('https://api.frankfurter.app/latest?from=USD&to=INR');
+      const data = JSON.parse(text); 
+      const rate = data && data.rates && data.rates['INR'];
       
       if(typeof rate === 'number' && isFinite(rate) && rate > 0) {
         currentExRate = rate;

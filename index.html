@@ -348,7 +348,28 @@ if (window.matchMedia("(max-width: 767px)").matches) {
     return text;
   }
 
+  const CACHE_RATE = 'rdpc_ex_rate';
+  const CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hours
+
   async function fetchLiveRate() {
+    setStatus('Checking rate…');
+    const cachedDataStr = localStorage.getItem(CACHE_RATE);
+    
+    if (cachedDataStr) {
+      try {
+        const cachedData = JSON.parse(cachedDataStr);
+        const now = Date.now();
+        
+        if (now - cachedData.timestamp < CACHE_DURATION) {
+          currentExRate = cachedData.rate;
+          srcPill.textContent = `$1 = ₹ ${currentExRate.toFixed(2)}`;
+          calculate();
+          return;
+        }
+      } catch (e) {
+        console.warn('Cache parsing failed, fetching new rate.');
+      }
+    }
     setStatus('Updating ExRate…');
     try {
       const text = await fetchSmart('https://api.frankfurter.dev/v1/latest?from=USD&to=INR');
@@ -359,6 +380,10 @@ if (window.matchMedia("(max-width: 767px)").matches) {
         currentExRate = rate;
         srcPill.textContent = `$1 = ₹ ${rate.toFixed(2)}`;
         setStatus('LIVE', true);
+	localStorage.setItem(CACHE_RATE, JSON.stringify({
+          rate: currentExRate,
+          timestamp: Date.now()
+        }));
         calculate();
       } else {
         setStatus('Error interpreting ExRates');
@@ -521,7 +546,6 @@ if (window.matchMedia("(max-width: 767px)").matches) {
 
   // Initialize
   fetchLiveRate();
-  setInterval(fetchLiveRate, 60 * 1000); // sync every 60 seconds
 })();
 </script>
 </body>

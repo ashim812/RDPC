@@ -363,6 +363,7 @@ if (window.matchMedia("(max-width: 767px)").matches) {
         if (now - cachedData.timestamp < CACHE_DURATION) {
           currentExRate = cachedData.rate;
           srcPill.textContent = `$1 = ₹ ${currentExRate.toFixed(2)}`;
+	      setStatus('LIVE', true);
           calculate();
           return;
         }

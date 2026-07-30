@@ -353,6 +353,7 @@ if (window.matchMedia("(max-width: 767px)").matches) {
 
   async function fetchLiveRate() {
     setStatus('Checking rate…');
+	await new Promise(resolve => setTimeout(resolve, 50));
     const cachedDataStr = localStorage.getItem(CACHE_RATE);
     
     if (cachedDataStr) {

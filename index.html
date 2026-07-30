@@ -351,9 +351,9 @@ if (window.matchMedia("(max-width: 767px)").matches) {
   async function fetchLiveRate() {
     setStatus('Updating ExRate…');
     try {
-      const text = await fetchSmart('https://api.frankfurter.dev/v1/latest?base=USD&symbols=INR');
+      const text = await fetchSmart('https://api.frankfurter.dev/v2/rate/USD/INR');
       const data = JSON.parse(text); 
-      const rate = data && data.rates && data.rates['INR'];
+      const rate = data && data.rate;
       
       if(typeof rate === 'number' && isFinite(rate) && rate > 0) {
         currentExRate = rate;

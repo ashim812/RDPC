@@ -349,11 +349,11 @@ if (window.matchMedia("(max-width: 767px)").matches) {
   }
 
   const CACHE_RATE = 'rdpc_ex_rate';
-  const CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hours
+  const CACHE_DURATION = 60 * 60 * 1000; // Every hour
 
   async function fetchLiveRate() {
     setStatus('Checking rate…');
-	await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise(resolve => setTimeout(resolve, 300));
     const cachedDataStr = localStorage.getItem(CACHE_RATE);
     
     if (cachedDataStr) {
@@ -364,7 +364,7 @@ if (window.matchMedia("(max-width: 767px)").matches) {
         if (now - cachedData.timestamp < CACHE_DURATION) {
           currentExRate = cachedData.rate;
           srcPill.textContent = `$1 = ₹ ${currentExRate.toFixed(2)}`;
-	      setStatus('LIVE', true);
+	  setStatus('LIVE', true);
           calculate();
           return;
         }
@@ -520,7 +520,7 @@ if (window.matchMedia("(max-width: 767px)").matches) {
 
       //Share text
       const shareText = `E${codedDiscount}\n\n` +
-	`${typeVal} Diamond - ${certVal} certified\n\n` +
+	`${typeVal} Diamond [${certVal}-certified]\n\n` +
         `Color Grade: *${colourVal}*\n` +
 	`Clarity Grade: *${clarityVal}*\n` +
         `Carat Weight: *${weight.toFixed(2)} ct*\n` +
